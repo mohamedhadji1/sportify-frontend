@@ -54,7 +54,7 @@ export const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch("http://https://sportify-auth-backend.onrender.com/ap/api/auth/me", {
+        const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/auth/me", {
           headers: {
             "x-auth-token": token, // Ensure this matches your backend middleware
           },

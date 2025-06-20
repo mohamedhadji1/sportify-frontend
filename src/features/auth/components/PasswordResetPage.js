@@ -21,7 +21,7 @@ const PasswordResetPage = () => {
       }
 
       try {
-        const response = await fetch(`http://https://sportify-auth-backend.onrender.com/ap/api/auth/validate-reset-token/${token}`);
+        const response = await fetch(`http://https://sportify-auth-backend.onrender.com/api/auth/validate-reset-token/${token}`);
         const data = await response.json();
           if (data.success) {
           setTokenValid(true);

@@ -155,7 +155,7 @@ export const PlayerSignIn = ({ onClose, onSwitchToManager, onSwitchToPlayerSignU
     setResendStatus({ message: "", type: "" });
     setVerificationError("");
     try {
-      const response = await fetch("http://https://sportify-auth-backend.onrender.com/ap/api/verification/resend-verification", {
+      const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/verification/resend-verification", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email }),

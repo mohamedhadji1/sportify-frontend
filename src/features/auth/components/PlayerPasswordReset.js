@@ -26,7 +26,7 @@ export const PlayerPasswordReset = ({ onClose, onSwitchToSignIn }) => {
     }
 
     try {
-      const response = await fetch("http://https://sportify-auth-backend.onrender.com/ap/api/auth/forgot-password", {
+      const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/auth/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
