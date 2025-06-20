@@ -6,7 +6,7 @@ import { Icons } from "../../../shared/ui/components/Icons";
 import { AuthHeader } from "./shared/AuthHeader";
 import { AuthAlert } from "./shared/AuthAlert";
 import { Link } from "../../../shared/ui/components/Link"
-import { ReCaptchaV3 } from "../../../shared/ui/components/ReCaptchaV3"
+import ReCaptchaV3 from "../../../shared/ui/components/ReCaptchaV3"
 
 export const PlayerSignUp = ({ onClose, onSwitchToPlayerSignIn }) => {
   const [showVerificationModal, setShowVerificationModal] = useState(false);

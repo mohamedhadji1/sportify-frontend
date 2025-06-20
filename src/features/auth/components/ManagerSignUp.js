@@ -9,7 +9,7 @@ import { FileUpload } from "../../../shared/ui/components/FileUpload"
 import { Icons } from "../../../shared/ui/components/Icons"
 import { AuthHeader } from "./shared/AuthHeader"
 import { AuthAlert } from "./shared/AuthAlert"
-import { ReCaptchaV3 } from "../../../shared/ui/components/ReCaptchaV3"
+import ReCaptchaV3 from "../../../shared/ui/components/ReCaptchaV3"
 import { AuthService } from "../services/authService"
 
 export const ManagerSignUp = ({ onClose, onSwitchToManagerSignIn }) => {
