@@ -10,6 +10,7 @@ import { Icons } from "../../../shared/ui/components/Icons"
 import { AuthHeader } from "./shared/AuthHeader"
 import { AuthAlert } from "./shared/AuthAlert"
 import { ReCaptchaV3 } from "../../../shared/ui/components/ReCaptchaV3"
+import { AuthService } from "../services/authService"
 
 export const ManagerSignUp = ({ onClose, onSwitchToManagerSignIn }) => {
   const [fullName, setFullName] = useState("")
@@ -90,8 +91,7 @@ export const ManagerSignUp = ({ onClose, onSwitchToManagerSignIn }) => {
     formData.append("attachment", attachment)
     formData.append("recaptchaToken", recaptchaToken)
 
-    try {
-      console.log("Manager signup attempt:", {
+    try {      console.log("Manager signup attempt:", {
         fullName,
         email,
         companyName,
@@ -99,13 +99,9 @@ export const ManagerSignUp = ({ onClose, onSwitchToManagerSignIn }) => {
         phoneNumber,
         attachment: attachment ? attachment.name : null
       })
-      const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/auth/manager/signup", {
-        method: "POST",
-        body: formData,
-      })
+      const { response, data } = await AuthService.managerSignup(formData)
 
       if (!response.ok) {
-        const data = await response.json()
         throw new Error(data.msg || (data.errors && data.errors[0].msg) || "Manager registration failed")
       }
       

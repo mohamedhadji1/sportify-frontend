@@ -6,6 +6,7 @@ import { Icons } from "../../../shared/ui/components/Icons"
 import { AuthHeader } from "./shared/AuthHeader"
 import { AuthAlert } from "./shared/AuthAlert"
 import { ReCaptchaV3 } from "../../../shared/ui/components/ReCaptchaV3"
+import { AuthService } from "../services/authService"
 
 export const PlayerSignIn = ({ onClose, onSwitchToManager, onSwitchToPlayerSignUp, onSwitchToPasswordReset, on2FARequired }) => {
   const [email, setEmail] = useState("");
@@ -49,31 +50,15 @@ export const PlayerSignIn = ({ onClose, onSwitchToManager, onSwitchToPlayerSignU
         setIsLoading(false);
         return;
       }
-    }
-
-    try {
-      const requestBody = { 
-        email, 
-        password, 
-        role: "Player",
-        recaptchaToken 
-      };
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
+    }    try {
+      const { response, data } = await AuthService.playerLogin(email, password, recaptchaToken);
 
       if (response.status === 401 && data.code === 'ACCOUNT_NOT_VERIFIED') {
         setError(data.msg || "Your account is not verified. Please check your email for the verification code.");
         setShowEmailVerificationModal(true);
         setIsLoading(false);
         return;
-      }      if (response.status === 401 && (data.msg === '2FA required' || data.msg?.toLowerCase().includes('2fa')) && data.tempToken) {
+      }if (response.status === 401 && (data.msg === '2FA required' || data.msg?.toLowerCase().includes('2fa')) && data.tempToken) {
         if (on2FARequired) {
           on2FARequired(email, data.tempToken, handleLoginSuccess);
         }
@@ -126,17 +111,11 @@ export const PlayerSignIn = ({ onClose, onSwitchToManager, onSwitchToPlayerSignU
   const handleRecaptchaError = () => {
     setError("reCAPTCHA verification failed. Please try again.");
   };
-
   const handleVerifyCode = async () => {
     setIsVerifying(true);
     setVerificationError("");
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/verification/verify-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email, code: verificationCode }),
-      });
-      const data = await response.json();
+      const { response, data } = await AuthService.verifyEmail(email, verificationCode, "Player");
       if (!response.ok) {
         throw new Error(data.msg || "Verification failed. Invalid or expired code.");
       }
@@ -153,14 +132,8 @@ export const PlayerSignIn = ({ onClose, onSwitchToManager, onSwitchToPlayerSignU
   const handleResendVerificationCode = async () => {
     setIsResendingCode(true);
     setResendStatus({ message: "", type: "" });
-    setVerificationError("");
-    try {
-      const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/verification/resend-verification", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email }),
-      });
-      const data = await response.json();
+    setVerificationError("");    try {
+      const { response, data } = await AuthService.resendVerificationCode(email, "Player");
       if (!response.ok) {
         throw new Error(data.msg || "Failed to resend code.");
       }

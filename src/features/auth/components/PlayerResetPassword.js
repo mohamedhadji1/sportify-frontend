@@ -7,6 +7,7 @@ import { Link } from "../../../shared/ui/components/Link"
 import { Icons } from "../../../shared/ui/components/Icons"
 import { AuthHeader } from "./shared/AuthHeader"
 import { AuthAlert } from "./shared/AuthAlert"
+import { AuthService } from "../services/authService"
 
 export const PlayerResetPassword = ({ token, resetToken, onClose, onSuccess, onCancel }) => {
   // Use token prop if provided (from URL), otherwise use resetToken (from modal)
@@ -25,17 +26,8 @@ export const PlayerResetPassword = ({ token, resetToken, onClose, onSuccess, onC
         setIsTokenValid(false)
         setIsCheckingToken(false)
         return
-      }
-
-      try {
-        const response = await fetch(`http://https://sportify-auth-backend.onrender.com/api/auth/validate-reset-token/${currentToken}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        })
-
-        const data = await response.json()
+      }      try {
+        const { response, data } = await AuthService.validateResetToken(currentToken)
 
         if (!response.ok) {
           throw new Error(data.msg || "Invalid or expired reset token.")
@@ -76,19 +68,11 @@ export const PlayerResetPassword = ({ token, resetToken, onClose, onSuccess, onC
       setIsLoading(false)
       return
     }      try {
-        const response = await fetch(`http://https://sportify-auth-backend.onrender.com/api/auth/reset-password/${currentToken}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ password }),
-      })
-
-      const data = await response.json()
+        const { response, data } = await AuthService.resetPassword(currentToken, password)
 
       if (!response.ok) {
         throw new Error(data.msg || "Failed to reset password.")
-      }      // Success - call the onSuccess callback if provided
+      }// Success - call the onSuccess callback if provided
       if (onSuccess) {
         onSuccess("Password reset successfully! You can now sign in with your new password.")
       }

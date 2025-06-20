@@ -5,6 +5,7 @@ import { Link } from "../../../shared/ui/components/Link";
 import { Icons } from "../../../shared/ui/components/Icons";
 import { AuthHeader } from "./shared/AuthHeader";
 import { AuthAlert } from "./shared/AuthAlert";
+import { AuthService } from "../services/authService";
 
 export const ManagerPasswordReset = ({ onClose, onSwitchToSignIn }) => {
   const [email, setEmail] = useState("");
@@ -23,21 +24,8 @@ export const ManagerPasswordReset = ({ onClose, onSwitchToSignIn }) => {
       setError("Email is required");
       setIsLoading(false);
       return;
-    }
-
-    try {
-      const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/auth/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          email: email.toLowerCase().trim(),
-          role: "Manager" 
-        }),
-      });
-
-      const data = await response.json();
+    }    try {
+      const { response, data } = await AuthService.forgotPassword(email.toLowerCase().trim(), "Manager");
 
       if (!response.ok) {
         throw new Error(data.msg || "Failed to send reset email");

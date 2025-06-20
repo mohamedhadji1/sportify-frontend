@@ -4,6 +4,7 @@ import { Navbar } from '../../../core/layout/Navbar';
 import { Footer } from '../../../core/layout/Footer';
 import { PlayerResetPassword } from './PlayerResetPassword';
 import { ManagerResetPassword } from './ManagerResetPassword';
+import { AuthService } from '../services/authService';
 
 const PasswordResetPage = () => {
   const { token } = useParams();
@@ -18,11 +19,8 @@ const PasswordResetPage = () => {
         setTokenValid(false);
         setLoading(false);
         return;
-      }
-
-      try {
-        const response = await fetch(`http://https://sportify-auth-backend.onrender.com/api/auth/validate-reset-token/${token}`);
-        const data = await response.json();
+      }      try {
+        const { response, data } = await AuthService.validateResetToken(token);
           if (data.success) {
           setTokenValid(true);
           setUserRole(data.data?.role);

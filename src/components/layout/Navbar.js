@@ -3,15 +3,18 @@
 import { useState, useEffect , useCallback} from "react"
 import { NavLink } from "../ui/NavLink"
 import { AuthModal } from "../ui/AuthModal"
-import { ManagerSignIn } from "../auth/ManagerSignIn"
-import { PlayerSignIn } from "../auth/PlayerSignIn"
-import { ManagerSignUp } from "../auth/ManagerSignUp"
-import { PlayerSignUp } from "../auth/PlayerSignUp"
-import { PlayerPasswordReset } from "../auth/PlayerPasswordReset"
-import { ManagerPasswordReset } from "../auth/ManagerPasswordReset"
-import { TwoFactorVerificationModal } from "../auth/shared/TwoFactorVerificationModal"
+import { ManagerSignIn } from "../../features/auth/components/ManagerSignIn"
+import { PlayerSignIn } from "../../features/auth/components/PlayerSignIn"
+import { ManagerSignUp } from "../../features/auth/components/ManagerSignUp"
+import { PlayerSignUp } from "../../features/auth/components/PlayerSignUp"
+import { PlayerPasswordReset } from "../../features/auth/components/PlayerPasswordReset"
+import { ManagerPasswordReset } from "../../features/auth/components/ManagerPasswordReset"
+import { TwoFactorVerificationModal } from "../../features/auth/components/shared/TwoFactorVerificationModal"
+import { AuthService } from "../../features/auth/services/authService"
 import { Logo } from "../ui/Logo"
 import { Avatar } from "../ui/Avatar"
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
 
 export const Navbar = () => {
   const navLinks = [
@@ -49,18 +52,12 @@ export const Navbar = () => {
     // Redirect to home page after logout
     window.location.href = "/";
   }, []);
-
   const fetchUserDetails = useCallback(async () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/auth/me", {
-          headers: {
-            "x-auth-token": token, // Ensure this matches your backend middleware
-          },
-        });
+        const { response, data: userData } = await AuthService.getCurrentUser();
         if (response.ok) {
-          const userData = await response.json();
           if (userData.success) {
             setUserName(userData.fullName || "User");
             setUserProfileImage(userData.profileImage || null);
@@ -194,11 +191,10 @@ export const Navbar = () => {
               <div className="flex items-center space-x-4">
                 <div className="relative">
                   <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="text-white hover:text-sky-300 transition-colors duration-300 font-medium text-sm px-4 py-2 rounded-md hover:bg-neutral-700/50 flex items-center space-x-2"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}                    className="text-white hover:text-sky-300 transition-colors duration-300 font-medium text-sm px-4 py-2 rounded-md hover:bg-neutral-700/50 flex items-center space-x-2"
                   >
                     <Avatar 
-                      src={userProfileImage ? `http://https://sportify-auth-backend.onrender.com/ap${userProfileImage}` : null}
+                      src={userProfileImage ? `${API_BASE_URL.replace('/api', '')}${userProfileImage}` : null}
                       alt={userName}
                       size="sm"
                       className="flex-shrink-0"
@@ -370,9 +366,8 @@ export const Navbar = () => {
             <div className="flex flex-col space-y-3 pt-3">
               {isAuthenticated ? (
                 <>
-                  <div className="flex items-center space-x-3 px-3 py-2">
-                    <Avatar 
-                      src={userProfileImage ? `http://https://sportify-auth-backend.onrender.com/ap${userProfileImage}` : null}
+                  <div className="flex items-center space-x-3 px-3 py-2">                    <Avatar 
+                      src={userProfileImage ? `${API_BASE_URL.replace('/api', '')}${userProfileImage}` : null}
                       alt={userName}
                       size="sm"
                       className="flex-shrink-0"

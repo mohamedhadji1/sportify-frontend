@@ -6,6 +6,7 @@ import { Icons } from "../../../shared/ui/components/Icons"
 import { AuthHeader } from "./shared/AuthHeader"
 import { AuthAlert } from "./shared/AuthAlert"
 import ReCaptchaV3 from "../../../shared/ui/components/ReCaptchaV3"
+import { AuthService } from "../services/authService"
 
 export const ManagerSignIn = ({ onClose, onSwitchToPlayer, onSwitchToManagerSignUp, onSwitchToForgotPassword, on2FARequired }) => {const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -41,23 +42,8 @@ export const ManagerSignIn = ({ onClose, onSwitchToPlayer, onSwitchToManagerSign
       }
     }
 
-    try {
-      // Removed verbose login attempt console.log for privacy
-      const requestBody = { 
-        email, 
-        password, 
-        role: "Manager",
-        recaptchaToken 
-      };
-      const response = await fetch("http://https://sportify-auth-backend.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
+    try {      // Removed verbose login attempt console.log for privacy
+      const { response, data } = await AuthService.managerLogin(email, password, recaptchaToken);
 
       if (response.status === 401 && (data.msg === '2FA required' || data.msg?.toLowerCase().includes('2fa')) && data.tempToken) {
         if (on2FARequired) {

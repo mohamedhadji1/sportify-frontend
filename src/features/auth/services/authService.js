@@ -21,10 +21,14 @@ export class AuthService {
     const data = await response.json();
     return { response, data };
   }
-
   // Player login
-  static async playerLogin(email, password) {
-    const requestBody = { email, password, role: "Player" };
+  static async playerLogin(email, password, recaptchaToken) {
+    const requestBody = { 
+      email, 
+      password, 
+      role: "Player",
+      recaptchaToken 
+    };
     
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
@@ -168,6 +172,23 @@ export class AuthService {
         "Authorization": `Bearer ${localStorage.getItem("token")}`
       },
       body: JSON.stringify({ userId, verificationCode, secret }),
+    });
+
+    const data = await response.json();
+    return { response, data };
+  }
+
+  // Get current user details
+  static async getCurrentUser() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found");
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      headers: {
+        "x-auth-token": token,
+      },
     });
 
     const data = await response.json();

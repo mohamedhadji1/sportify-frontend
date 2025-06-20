@@ -5,15 +5,16 @@ import { NavLink } from "../../shared/ui/components/NavLink"
 import { AuthModal } from "../../shared/ui/components/AuthModal"
 import { Logo } from "../../shared/ui/components/Logo"
 import { Avatar } from "../../shared/ui/components/Avatar"
+import { AuthService } from "../../features/auth/services/authService"
 
 // Lazy load auth components to prevent reCAPTCHA from loading globally
-const ManagerSignIn = lazy(() => import("../../components/auth/ManagerSignIn").then(module => ({ default: module.ManagerSignIn })))
-const PlayerSignIn = lazy(() => import("../../components/auth/PlayerSignIn").then(module => ({ default: module.PlayerSignIn })))
-const ManagerSignUp = lazy(() => import("../../components/auth/ManagerSignUp").then(module => ({ default: module.ManagerSignUp })))
-const PlayerSignUp = lazy(() => import("../../components/auth/PlayerSignUp").then(module => ({ default: module.PlayerSignUp })))
+const ManagerSignIn = lazy(() => import("../../features/auth/components/ManagerSignIn").then(module => ({ default: module.ManagerSignIn })))
+const PlayerSignIn = lazy(() => import("../../features/auth/components/PlayerSignIn").then(module => ({ default: module.PlayerSignIn })))
+const ManagerSignUp = lazy(() => import("../../features/auth/components/ManagerSignUp").then(module => ({ default: module.ManagerSignUp })))
+const PlayerSignUp = lazy(() => import("../../features/auth/components/PlayerSignUp").then(module => ({ default: module.PlayerSignUp })))
 const PlayerPasswordReset = lazy(() => import("../../features/auth/components/PlayerPasswordReset").then(module => ({ default: module.PlayerPasswordReset })))
 const ManagerPasswordReset = lazy(() => import("../../features/auth/components/ManagerPasswordReset").then(module => ({ default: module.ManagerPasswordReset })))
-const TwoFactorModal = lazy(() => import("../../features/auth/components/TwoFactorModal"))
+const TwoFactorModal = lazy(() => import("../../features/auth/components/shared/TwoFactorVerificationModal").then(module => ({ default: module.TwoFactorVerificationModal })))
 
 export const Navbar = () => {
   const navLinks = [
@@ -75,13 +76,8 @@ export const Navbar = () => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/me`, {
-          headers: {
-            "x-auth-token": token, // Ensure this matches your backend middleware
-          },
-        });
+        const { response, data: userData } = await AuthService.getCurrentUser();
         if (response.ok) {
-          const userData = await response.json();
           if (userData.success) {
             setUserName(userData.fullName || "User");
             setUserProfileImage(userData.profileImage || null);

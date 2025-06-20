@@ -1,5 +1,5 @@
 // API Configuration
-export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+export const API_URL = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
 
 // Other configuration constants
 export const DEFAULT_PAGE_SIZE = 10;

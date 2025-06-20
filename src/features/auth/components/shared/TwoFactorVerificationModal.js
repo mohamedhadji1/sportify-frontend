@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Button } from "../../ui/Button"
-import { TextInput } from "../../ui/TextInput"
-import { Icons } from "../../ui/Icons"
+import { Button } from "../../../../shared/ui/components/Button"
+import { TextInput } from "../../../../shared/ui/components/TextInput"
+import { Icons } from "../../../../shared/ui/components/Icons"
 import { AuthAlert } from "./AuthAlert"
-
-import { AuthHeader } from "./AuthHeader";
+import { AuthHeader } from "./AuthHeader"
+import { AuthService } from "../../services/authService"
 
 export const TwoFactorVerificationModal = ({ email, tempToken, onVerifySuccess, onVerifyFail, onClose, isVisible }) => {
   const [twoFACode, setTwoFACode] = useState("")
@@ -22,28 +22,10 @@ export const TwoFactorVerificationModal = ({ email, tempToken, onVerifySuccess, 
       setError("2FA code is required.")
       setIsLoading(false)
       return
-    }
-
-    try {
+    }    try {
       // Removed verbose 2FA verification console.log for privacy
-      const requestBody = { email, code: twoFACode, tempToken }
 
-      // Add timeout to prevent hanging requests
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000)
-
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/2fa/login-verify`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-        signal: controller.signal,
-      })
-
-      clearTimeout(timeoutId)
-
-      const data = await response.json()
+      const { response, data } = await AuthService.verify2FA(email, twoFACode, tempToken)
 
       if (!response.ok) {
         throw new Error(data.msg || "2FA verification failed. Please try again.")
