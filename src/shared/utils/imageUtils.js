@@ -28,24 +28,32 @@ export const getImageUrl = (imagePath) => {
   if (baseUrl.includes('sportify-auth.onrender.com') && !baseUrl.includes('sportify-auth-backend.onrender.com')) {
     baseUrl = baseUrl.replace('sportify-auth.onrender.com', 'sportify-auth-backend.onrender.com');
   }
-  
-  // Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
+    // Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
   let cleanImagePath = imagePath;
   
-  // Remove all variations of malformed protocols
+  // Step 1: Fix the specific https// pattern (missing colon) EVERYWHERE in the string
+  cleanImagePath = cleanImagePath.replace(/https\/\//g, '');
+  
+  // Step 2: Remove all variations of malformed protocols at the beginning
   cleanImagePath = cleanImagePath
     .replace(/^https?:\/\/https?:\/\//g, '')    // Remove http(s)://http(s)://
     .replace(/^https?:\/\/https?\/\//g, '')     // Remove http(s)://http(s)//
-    .replace(/^https?\/\//g, '')                // Remove http(s)//
     .replace(/^https?:\/\//g, '')               // Remove http(s)://
     .replace(/^\/\/+/g, '')                     // Remove leading //
     .replace(/^\/+/g, '/');                     // Normalize leading slashes
   
-  // If after cleanup it still looks like a full URL (contains domain), extract just the path
-  if (cleanImagePath.includes('.onrender.com') || cleanImagePath.includes('.com')) {
-    const pathMatch = cleanImagePath.match(/[^\/]*\.com(.*)$/);
+  // Step 3: If it still contains any domain patterns, extract just the path part
+  if (cleanImagePath.includes('sportify-auth') || cleanImagePath.includes('.onrender.com') || cleanImagePath.includes('.com')) {
+    // Try to extract the path after the domain
+    const pathMatch = cleanImagePath.match(/(?:sportify-auth[^\/]*\.onrender\.com|[^\/]*\.com)(.*)$/);
     if (pathMatch && pathMatch[1]) {
       cleanImagePath = pathMatch[1];
+    } else {
+      // Fallback: if it contains a domain but no clear path, look for /uploads/ pattern
+      const uploadsMatch = cleanImagePath.match(/(\/uploads\/.*)$/);
+      if (uploadsMatch) {
+        cleanImagePath = uploadsMatch[1];
+      }
     }
   }
   
