@@ -76,7 +76,7 @@ export class AuthService {
       },
       body: JSON.stringify({
         email,
-        verificationCode,
+        code: verificationCode, // Fix: backend expects 'code'
         role,
       }),
     });
