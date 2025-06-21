@@ -1,7 +1,10 @@
 // Utility function to construct proper image URLs
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
-    // Get the base URL and clean it up
+  
+  console.log('🔍 getImageUrl called with:', imagePath);
+  
+  // Get the base URL and clean it up
   let baseUrl = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
   
   // Remove /api suffix if present
@@ -26,72 +29,77 @@ export const getImageUrl = (imagePath) => {
   // If the domain is sportify-auth.onrender.com, change it to sportify-auth-backend.onrender.com
   if (baseUrl.includes('sportify-auth.onrender.com') && !baseUrl.includes('sportify-auth-backend.onrender.com')) {
     baseUrl = baseUrl.replace('sportify-auth.onrender.com', 'sportify-auth-backend.onrender.com');
-  }// Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
+  }
+  
+  console.log('🔧 Cleaned baseUrl:', baseUrl);  // Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
   let cleanImagePath = imagePath;
   
-  console.log('DEBUG - Before cleanup:', { imagePath, cleanImagePath });
+  console.log('🧹 Before cleanup:', { originalImagePath: imagePath, cleanImagePath });
   
-  // Step 1: Check if this is already a full URL and extract just the path
-  if (cleanImagePath.includes('sportify-auth') || cleanImagePath.includes('.onrender.com')) {
-    console.log('DEBUG - Detected full URL in imagePath, extracting path...');
+  // AGGRESSIVE APPROACH: If it contains any URL patterns, extract just the path
+  if (cleanImagePath.includes('://') || cleanImagePath.includes('//') || cleanImagePath.includes('.onrender.com') || cleanImagePath.includes('sportify-auth')) {
+    console.log('🚨 DETECTED malformed URL pattern in imagePath!');
     
-    // Try to extract the /uploads/ path from anywhere in the string
-    const uploadsMatch = cleanImagePath.match(/(\/uploads\/[^?\s]*)/);
+    // First, try to extract /uploads/ path pattern
+    const uploadsMatch = cleanImagePath.match(/(\/uploads\/[^?\s\n]*)/);
     if (uploadsMatch) {
       cleanImagePath = uploadsMatch[1];
-      console.log('DEBUG - Extracted uploads path:', cleanImagePath);
+      console.log('✅ Extracted via uploads pattern:', cleanImagePath);
     } else {
-      // Fallback: look for any path after a domain
-      const pathMatch = cleanImagePath.match(/\.com([\/].*?)(?:\?|$)/);
+      // Try to extract any path after .com
+      const pathMatch = cleanImagePath.match(/\.com([\/].*?)(?:\?|$|$)/);
       if (pathMatch && pathMatch[1]) {
         cleanImagePath = pathMatch[1];
-        console.log('DEBUG - Extracted domain path:', cleanImagePath);
+        console.log('✅ Extracted via .com pattern:', cleanImagePath);
+      } else {
+        // Last resort: remove everything before the first /
+        const slashIndex = cleanImagePath.lastIndexOf('/');
+        if (slashIndex > 0) {
+          cleanImagePath = cleanImagePath.substring(slashIndex);
+          console.log('✅ Extracted via last slash:', cleanImagePath);
+        }
       }
     }
   }
   
-  // Step 2: Fix the specific https// pattern (missing colon) EVERYWHERE in the string
-  cleanImagePath = cleanImagePath.replace(/https\/\//g, '');
-  console.log('DEBUG - After https// removal:', cleanImagePath);
-  
-  // Step 3: Remove all variations of malformed protocols at the beginning
+  // Remove any remaining protocol fragments
   cleanImagePath = cleanImagePath
-    .replace(/^https?:\/\/https?:\/\//g, '')    // Remove http(s)://http(s)://
-    .replace(/^https?:\/\/https?\/\//g, '')     // Remove http(s)://http(s)//
-    .replace(/^https?:\/\//g, '')               // Remove http(s)://
-    .replace(/^\/\/+/g, '')                     // Remove leading //
-    .replace(/^\/+/g, '/');                     // Normalize leading slashes
+    .replace(/^https?:\/\/.*?\//, '/')  // Remove full protocol+domain
+    .replace(/^https?\/\/.*?\//, '/')   // Remove malformed protocol+domain
+    .replace(/https?\/\//g, '')        // Remove any remaining https// patterns
+    .replace(/^\/+/, '/');             // Normalize multiple leading slashes
   
-  console.log('DEBUG - After protocol removal:', cleanImagePath);
-  
-  // Step 4: Final cleanup - if it still contains domain patterns, try one more extraction
-  if (cleanImagePath.includes('sportify-auth') || cleanImagePath.includes('.onrender.com') || cleanImagePath.includes('.com')) {
-    console.log('DEBUG - Still contains domain, final extraction...');
-    // Remove everything up to and including the domain
-    cleanImagePath = cleanImagePath.replace(/^.*?\.com/, '');
-    console.log('DEBUG - After domain removal:', cleanImagePath);
-  }
-  // Ensure the image path starts with /
+  console.log('🔧 After aggressive cleanup:', cleanImagePath);  // Ensure the image path starts with /
   if (!cleanImagePath.startsWith('/')) {
     cleanImagePath = `/${cleanImagePath}`;
-  }  
-  console.log('DEBUG - Final cleanup result:', cleanImagePath);
+  }
+  
+  console.log('🔧 Final cleanup result:', cleanImagePath);
   
   // Construct the final URL
   const finalUrl = `${baseUrl}${cleanImagePath}`;
   
-  console.log('getImageUrl debug:', { 
+  console.log('🎯 FINAL RESULT:', { 
     originalImagePath: imagePath,
-    originalBaseUrl: process.env.REACT_APP_API_URL,
     cleanedBaseUrl: baseUrl, 
     cleanImagePath, 
-    finalResult: finalUrl
+    finalUrl: finalUrl
   });
   
   // Final safety check - ensure the result is a proper HTTPS URL
   if (!finalUrl.startsWith('https://')) {
-    console.warn('Final URL does not start with https://', finalUrl);
-    return `https://sportify-auth-backend.onrender.com${cleanImagePath}`;
+    console.error('🚨 ERROR: Final URL does not start with https://', finalUrl);
+    const safeUrl = `https://sportify-auth-backend.onrender.com${cleanImagePath}`;
+    console.log('🛡️ FALLBACK URL:', safeUrl);
+    return safeUrl;
+  }
+  
+  // Double-check that we don't have any malformed patterns in the final URL
+  if (finalUrl.includes('https//') || finalUrl.includes('http//')) {
+    console.error('🚨 ERROR: Final URL still contains malformed patterns!', finalUrl);
+    const fixedUrl = finalUrl.replace(/https?\/\//g, 'https://');
+    console.log('🔧 FIXED URL:', fixedUrl);
+    return fixedUrl;
   }
   
   return finalUrl;
