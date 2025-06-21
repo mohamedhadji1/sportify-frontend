@@ -17,9 +17,10 @@ export const getImageUrl = (imagePath) => {
   if (baseUrl.includes('https//')) {
     baseUrl = baseUrl.replace('https//', 'https://');
   }
-  
-  // Handle case where baseUrl might be missing protocol
-  if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+    // Handle case where baseUrl might be missing protocol or using http://
+  if (!baseUrl.startsWith('https://')) {
+    // Remove any http:// and force https://
+    baseUrl = baseUrl.replace(/^https?:\/\//, '');
     baseUrl = `https://${baseUrl}`;
   }
   
