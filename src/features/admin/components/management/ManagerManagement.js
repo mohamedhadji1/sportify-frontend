@@ -7,6 +7,7 @@ import { Avatar } from '../../../../shared/ui/components/Avatar';
 import { useToast, ToastContainer } from '../../../../shared/ui/components/Toast';
 import ConfirmModal from '../../../../shared/ui/components/ConfirmModal';
 import { useAdvancedSearch } from '../../../../hooks/useAdvancedSearch';
+import { getImageUrl } from '../../../../shared/utils/imageUtils';
 import axios from 'axios';
 import { API_URL } from '../../../../shared/constants/config';
 
@@ -170,10 +171,9 @@ const ManagerManagement = () => {
     {
       Header: 'Profile',
       accessor: 'profileImage',
-      Cell: ({ value, row }) => (
-        <div className="flex items-center justify-center">
+      Cell: ({ value, row }) => (        <div className="flex items-center justify-center">
           <Avatar 
-            src={value ? `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}${value}` : null}
+            src={getImageUrl(value)}
             alt={row.name}
             size="sm"
             className="border border-slate-600"
@@ -260,11 +260,10 @@ const ManagerManagement = () => {
       Cell: ({ value }) => {
         if (!value || !Array.isArray(value) || value.length === 0) {
           return <span className="text-slate-400">No attachment</span>;
-        }
-        // Extract filename from the full path
+        }        // Extract filename from the full path
         const attachmentPath = value[0]; // Get first attachment
         const filename = attachmentPath.split(/[\\/]/).pop(); // Handle both / and \ separators
-        const attachmentUrl = `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}/uploads/${filename}`;
+        const attachmentUrl = getImageUrl(`/uploads/${filename}`);
         return (
           <a
             href={attachmentUrl}

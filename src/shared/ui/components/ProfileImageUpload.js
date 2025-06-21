@@ -4,6 +4,7 @@ import { useState, useRef } from "react"
 import { Button } from "./Button"
 import { Icons } from "./Icons"
 import { Avatar } from "./Avatar"
+import { getImageUrl } from "../../utils/imageUtils"
 
 export const ProfileImageUpload = ({ currentImage, onImageUpdate, className = "" }) => {
   const [isUploading, setIsUploading] = useState(false)
@@ -130,10 +131,9 @@ export const ProfileImageUpload = ({ currentImage, onImageUpdate, className = ""
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <div className="flex flex-col items-center space-y-4">
-        <div className="relative">
+      <div className="flex flex-col items-center space-y-4">        <div className="relative">
           <Avatar
-            src={currentImage ? `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}${currentImage}` : null}
+            src={getImageUrl(currentImage)}
             alt="Profile picture"
             size="xl"
             className="border-4 border-border"

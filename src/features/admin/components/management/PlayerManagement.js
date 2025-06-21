@@ -7,6 +7,7 @@ import { Avatar } from '../../../../shared/ui/components/Avatar';
 import { useToast, ToastContainer } from '../../../../shared/ui/components/Toast';
 import ConfirmModal from '../../../../shared/ui/components/ConfirmModal';
 import { useAdvancedSearch } from '../../../../hooks/useAdvancedSearch';
+import { getImageUrl } from '../../../../shared/utils/imageUtils';
 import axios from 'axios';
 import { API_URL } from '../../../../shared/constants/config';
 
@@ -449,10 +450,9 @@ const PlayerManagement = () => {
     {
       Header: 'Profile',
       accessor: 'profileImage',
-      Cell: ({ value, row }) => (
-        <div className="flex items-center justify-center">
+      Cell: ({ value, row }) => (        <div className="flex items-center justify-center">
           <Avatar 
-            src={value ? `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}${value}` : null}
+            src={getImageUrl(value)}
             alt={row.name}
             size="sm"
             className="border border-slate-600"
