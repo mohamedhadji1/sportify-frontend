@@ -6,12 +6,22 @@ export const getImageUrl = (imagePath) => {
   console.log('🔍 Original imagePath type:', typeof imagePath);
   console.log('🔍 Original imagePath string:', String(imagePath));
   
-  // IMMEDIATE FIX for the exact error pattern we're seeing
-  if (String(imagePath).includes('https//sportify-auth.onrender.com')) {
-    console.log('🎯🚨 CRITICAL: Found exact error pattern https//sportify-auth.onrender.com');
-    imagePath = String(imagePath).replace(/https\/\/sportify-auth\.onrender\.com/g, '');
-    console.log('🎯 Immediately fixed to:', imagePath);
+  // EMERGENCY FIX: If the input already contains the exact error pattern, fix it immediately
+  let inputPath = String(imagePath);
+  if (inputPath.includes('http://https//')) {
+    console.log('🚨🚨 EMERGENCY: Input already contains http://https// pattern!');
+    inputPath = inputPath.replace(/http:\/\/https\/\//g, 'https://');
+    console.log('🚑 Emergency fixed input:', inputPath);
   }
+  
+  // IMMEDIATE FIX for the exact error pattern we're seeing
+  if (inputPath.includes('https//sportify-auth.onrender.com')) {
+    console.log('🎯🚨 CRITICAL: Found exact error pattern https//sportify-auth.onrender.com');
+    inputPath = inputPath.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
+    console.log('🎯 Immediately fixed to:', inputPath);
+  }
+  
+  imagePath = inputPath;
   
   // ULTRA-AGGRESSIVE FIX: Remove ALL malformed protocol patterns IMMEDIATELY
   let cleanedPath = String(imagePath);
