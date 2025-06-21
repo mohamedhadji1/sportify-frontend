@@ -11,6 +11,7 @@ import { PlayerPasswordReset } from "../../features/auth/components/PlayerPasswo
 import { ManagerPasswordReset } from "../../features/auth/components/ManagerPasswordReset"
 import { TwoFactorVerificationModal } from "../../features/auth/components/shared/TwoFactorVerificationModal"
 import { AuthService } from "../../features/auth/services/authService"
+import { getImageUrl } from "../../shared/utils/imageUtils"
 import { Logo } from "../ui/Logo"
 import { Avatar } from "../ui/Avatar"
 
@@ -194,7 +195,7 @@ export const Navbar = () => {
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}                    className="text-white hover:text-sky-300 transition-colors duration-300 font-medium text-sm px-4 py-2 rounded-md hover:bg-neutral-700/50 flex items-center space-x-2"
                   >
                     <Avatar 
-                      src={userProfileImage ? `${API_BASE_URL.replace('/api', '')}${userProfileImage}` : null}
+                      src={getImageUrl(userProfileImage)}
                       alt={userName}
                       size="sm"
                       className="flex-shrink-0"
@@ -367,7 +368,7 @@ export const Navbar = () => {
               {isAuthenticated ? (
                 <>
                   <div className="flex items-center space-x-3 px-3 py-2">                    <Avatar 
-                      src={userProfileImage ? `${API_BASE_URL.replace('/api', '')}${userProfileImage}` : null}
+                      src={getImageUrl(userProfileImage)}
                       alt={userName}
                       size="sm"
                       className="flex-shrink-0"

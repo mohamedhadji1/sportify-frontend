@@ -5,6 +5,7 @@ import { Avatar } from "../../../shared/ui/components/Avatar"
 import { Card } from "../../../shared/ui/components/Card"
 import { Button } from "../../../shared/ui/components/Button"
 import { Icons } from "../../../shared/ui/components/Icons"
+import { getImageUrl } from "../../../shared/utils/imageUtils"
 
 export const ProfileHeader = ({ user }) => {
   const [isFollowing, setIsFollowing] = useState(false)
@@ -34,10 +35,9 @@ export const ProfileHeader = ({ user }) => {
       <div className="relative z-10 p-8">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
           {/* Avatar and Basic Info */}
-          <div className="flex items-center gap-6 animate-fadeInUp">
-            <div className="relative">
+          <div className="flex items-center gap-6 animate-fadeInUp">            <div className="relative">
               <Avatar
-                src={user.profileImage ? `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}${user.profileImage}` : null}
+                src={getImageUrl(user.profileImage)}
                 alt={user.fullName}
                 size="xl"
                 className="ring-4 ring-white/20 shadow-2xl hover:ring-white/40 transition-all duration-500 hover:scale-105"

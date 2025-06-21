@@ -6,6 +6,9 @@ import { AuthModal } from "../../shared/ui/components/AuthModal"
 import { Logo } from "../../shared/ui/components/Logo"
 import { Avatar } from "../../shared/ui/components/Avatar"
 import { AuthService } from "../../features/auth/services/authService"
+import { getImageUrl } from "../../shared/utils/imageUtils"
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
 
 // Lazy load auth components to prevent reCAPTCHA from loading globally
 const ManagerSignIn = lazy(() => import("../../features/auth/components/ManagerSignIn").then(module => ({ default: module.ManagerSignIn })))
@@ -190,7 +193,7 @@ export const Navbar = () => {
                     className="text-white hover:text-sky-300 transition-colors duration-300 font-medium text-sm px-4 py-2 rounded-md hover:bg-neutral-700/50 flex items-center space-x-2"
                   >
                     <Avatar 
-                      src={userProfileImage ? `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}${userProfileImage}` : null}
+                      src={getImageUrl(userProfileImage)}
                       alt={userName}
                       size="sm"
                       className="flex-shrink-0"
@@ -364,7 +367,7 @@ export const Navbar = () => {
                 <>
                   <div className="flex items-center space-x-3 px-3 py-2">
                     <Avatar 
-                      src={userProfileImage ? `${process.env.REACT_APP_API_URL.replace(/\/api$/, '')}${userProfileImage}` : null}
+                      src={getImageUrl(userProfileImage)}
                       alt={userName}
                       size="sm"
                       className="flex-shrink-0"
