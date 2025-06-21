@@ -111,9 +111,15 @@ const PlayerManagement = () => {
           'x-auth-token': token
         }
       });      if (response.data.success) {
-        console.log('Raw player data:', response.data.data[0]); // Debug: log first player
-        console.log('All player fields:', Object.keys(response.data.data[0])); // Show all available fields
-        const formattedPlayers = response.data.data.map(player => {
+        // Add null checks for the data array
+        if (response.data.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+          console.log('Raw player data:', response.data.data[0]); // Debug: log first player
+          console.log('All player fields:', Object.keys(response.data.data[0])); // Show all available fields
+        } else {
+          console.log('No player data available or empty array');
+        }
+        
+        const formattedPlayers = (response.data.data || []).map(player => {
           // Debug each player's sport-related fields
           console.log('Player sport fields:', {
             sport: player.sport,
@@ -389,10 +395,12 @@ const PlayerManagement = () => {
   const handleSearch = useCallback((newSearchParams) => {
     updateSearchParams(newSearchParams);
   }, [updateSearchParams]);
-
   // Helper function to compare search params deeply
   const areSearchParamsEqual = (params1, params2) => {
+    // Add null/undefined checks
+    if (!params1 && !params2) return true;
     if (!params1 || !params2) return false;
+    
     const keys1 = Object.keys(params1);
     const keys2 = Object.keys(params2);
     if (keys1.length !== keys2.length) return false;
