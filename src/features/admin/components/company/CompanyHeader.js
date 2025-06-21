@@ -1,17 +1,15 @@
 import React from 'react';
 import { Building2, Camera, Edit, Save, X, Trash2 } from 'lucide-react';
+import { getImageUrl } from '../../../../shared/utils/imageUtils';
 
 const CompanyHeader = ({ company, editing, onEdit, onSave, onCancel, onFileSelect, selectedFile, uploadingLogo, uploadLogo, clearFileSelection, setEditing, onDelete }) => (
   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div className="flex items-center space-x-4 sm:space-x-6">
       {/* Company Logo */}
       <div className="relative group">
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-700 rounded-xl flex items-center justify-center overflow-hidden border border-slate-600">
-          {company.logo && company.logo !== '/assets/logos/default-company-logo.svg' ? (
+        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-700 rounded-xl flex items-center justify-center overflow-hidden border border-slate-600">          {company.logo && company.logo !== '/assets/logos/default-company-logo.svg' ? (
             (() => {
-              const logoUrl = company.logo.startsWith('/uploads/')
-                ? `http://localhost:5001${company.logo}?t=${Date.now()}`
-                : company.logo;
+              const logoUrl = getImageUrl(company.logo);
               console.log('Company logo src:', logoUrl);
               return (
                 <a href={logoUrl} target="_blank" rel="noopener noreferrer">

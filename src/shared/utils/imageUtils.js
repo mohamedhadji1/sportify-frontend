@@ -4,6 +4,32 @@ export const getImageUrl = (imagePath) => {
   
   console.log('🔍 getImageUrl called with:', imagePath);
   
+  // CRITICAL FIX: Remove ALL malformed protocol patterns IMMEDIATELY
+  let cleanedPath = imagePath;
+  
+  // Remove https// patterns EVERYWHERE in the string (not just at start)
+  while (cleanedPath.includes('https//')) {
+    console.log('🚨 CRITICAL: Found https// pattern, removing!');
+    cleanedPath = cleanedPath.replace(/https\/\//g, '');
+    console.log('🔥 After https// removal:', cleanedPath);
+  }
+  
+  // Remove http// patterns EVERYWHERE in the string  
+  while (cleanedPath.includes('http//')) {
+    console.log('🚨 CRITICAL: Found http// pattern, removing!');
+    cleanedPath = cleanedPath.replace(/http\/\//g, '');
+    console.log('🔥 After http// removal:', cleanedPath);
+  }
+  
+  // Remove any other malformed protocol patterns
+  cleanedPath = cleanedPath
+    .replace(/https:\/\/https:\/\//g, '')
+    .replace(/https:\/\/https\/\//g, '')
+    .replace(/http:\/\/https:\/\//g, '')
+    .replace(/http:\/\/https\/\//g, '');
+  
+  imagePath = cleanedPath;
+  
   // Get the base URL and clean it up
   let baseUrl = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
   
@@ -34,11 +60,20 @@ export const getImageUrl = (imagePath) => {
   console.log('🔧 Cleaned baseUrl:', baseUrl);  // Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
   let cleanImagePath = imagePath;
   
-  console.log('🧹 Before cleanup:', { originalImagePath: imagePath, cleanImagePath });
-  
-  // AGGRESSIVE APPROACH: If it contains any URL patterns, extract just the path
+  console.log('🧹 Before cleanup:', { originalImagePath: imagePath, cleanImagePath });  // AGGRESSIVE APPROACH: If it contains any URL patterns, extract just the path
   if (cleanImagePath.includes('://') || cleanImagePath.includes('//') || cleanImagePath.includes('.onrender.com') || cleanImagePath.includes('sportify-auth')) {
     console.log('🚨 DETECTED malformed URL pattern in imagePath!');
+    
+    // CRITICAL: Remove ALL malformed protocol patterns AGAIN before processing
+    cleanImagePath = cleanImagePath
+      .replace(/https\/\//g, '')
+      .replace(/http\/\//g, '')
+      .replace(/https:\/\/https:\/\//g, '')
+      .replace(/https:\/\/https\/\//g, '')
+      .replace(/http:\/\/https:\/\//g, '')
+      .replace(/http:\/\/https\/\//g, '');
+    
+    console.log('🔥 After aggressive protocol cleanup:', cleanImagePath);
     
     // First, try to extract /uploads/ path pattern
     const uploadsMatch = cleanImagePath.match(/(\/uploads\/[^?\s\n]*)/);
@@ -93,11 +128,17 @@ export const getImageUrl = (imagePath) => {
     console.log('🛡️ FALLBACK URL:', safeUrl);
     return safeUrl;
   }
-  
-  // Double-check that we don't have any malformed patterns in the final URL
-  if (finalUrl.includes('https//') || finalUrl.includes('http//')) {
+    // Double-check that we don't have any malformed patterns in the final URL
+  if (finalUrl.includes('https//') || finalUrl.includes('http//') || finalUrl.includes('://://')) {
     console.error('🚨 ERROR: Final URL still contains malformed patterns!', finalUrl);
-    const fixedUrl = finalUrl.replace(/https?\/\//g, 'https://');
+    let fixedUrl = finalUrl
+      .replace(/https\/\//g, 'https://')
+      .replace(/http\/\//g, 'https://')
+      .replace(/https:\/\/https:\/\//g, 'https://')
+      .replace(/https:\/\/https\/\//g, 'https://')
+      .replace(/http:\/\/https:\/\//g, 'https://')
+      .replace(/http:\/\/https\/\//g, 'https://')
+      .replace(/:\/\/:\/\//g, '://');
     console.log('🔧 FIXED URL:', fixedUrl);
     return fixedUrl;
   }

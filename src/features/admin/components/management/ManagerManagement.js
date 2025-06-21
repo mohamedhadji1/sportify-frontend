@@ -97,7 +97,7 @@ const ManagerManagement = () => {
           phoneNumber: manager.phoneNumber || 'N/A',
           companyName: manager.companyName || 'N/A',
           status: manager.isVerified ? 'Active' : 'Inactive',
-          profileImage: manager.profileImage ? `/uploads/${manager.profileImage.split(/[\\/]/).pop()}` : null,
+          profileImage: manager.profileImage || null,
           attachment: manager.attachment
         }));
         setManagers(formattedManagers);

@@ -144,7 +144,7 @@ const PlayerManagement = () => {
             preferredSport: sportDisplay,
             position: player.position || 'Not specified',
             status: player.isVerified ? 'Active' : 'Inactive',
-            profileImage: player.profileImage ? `/uploads/${player.profileImage.split(/[\\/]/).pop()}` : null,
+            profileImage: player.profileImage || null,
             createdAt: player.createdAt ? new Date(player.createdAt).toLocaleDateString() : 'Unknown'
           };        });
         
