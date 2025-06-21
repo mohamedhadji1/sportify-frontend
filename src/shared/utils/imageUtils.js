@@ -6,17 +6,13 @@ export const getImageUrl = (imagePath) => {
   let baseUrl = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
   
   // Remove /api suffix if present
-  baseUrl = baseUrl.replace(/\/api$/, '');
-  
-  // Fix malformed URLs (http://https:// pattern)
-  if (baseUrl.includes('http://https://')) {
-    baseUrl = baseUrl.replace('http://https://', 'https://');
-  }
-  
-  // Fix double slashes in https URLs
-  if (baseUrl.includes('https//')) {
-    baseUrl = baseUrl.replace('https//', 'https://');
-  }
+  baseUrl = baseUrl.replace(/\/api$/, '');  // Comprehensive URL cleanup - fix all malformed patterns
+  baseUrl = baseUrl
+    .replace(/https:\/\/https:\/\//g, 'https://')  // Fix https://https://
+    .replace(/https:\/\/https\/\//g, 'https://')   // Fix https://https//
+    .replace(/http:\/\/https:\/\//g, 'https://')   // Fix http://https://
+    .replace(/https\/\//g, 'https://')             // Fix https//
+    .replace(/https:\/\/+/g, 'https://')           // Fix multiple slashes after https:
     // Handle case where baseUrl might be missing protocol or using http://
   if (!baseUrl.startsWith('https://')) {
     // Remove any http:// and force https://
