@@ -58,15 +58,25 @@ export const ProfileImageUpload = ({ currentImage, onImageUpdate, className = ""
       }
 
       setSuccess("Profile image updated successfully!")
-      
-      // Update the user data in localStorage
+        // Update the user data in localStorage
       const userData = JSON.parse(localStorage.getItem("user") || "{}")
-      userData.profileImage = data.imageUrl
+      
+      // CRITICAL FIX: Clean up malformed URLs from backend immediately
+      let cleanImageUrl = data.imageUrl;
+      if (cleanImageUrl && typeof cleanImageUrl === 'string') {
+        // Remove the malformed https// pattern that causes http://https// errors
+        cleanImageUrl = cleanImageUrl.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
+        cleanImageUrl = cleanImageUrl.replace(/https\/\//g, '');
+        cleanImageUrl = cleanImageUrl.replace(/http\/\//g, '');
+        console.log('🧹 ProfileImageUpload: Cleaned imageUrl from backend:', { original: data.imageUrl, cleaned: cleanImageUrl });
+      }
+      
+      userData.profileImage = cleanImageUrl
       localStorage.setItem("user", JSON.stringify(userData))
 
       // Call the callback to update parent component
       if (onImageUpdate) {
-        onImageUpdate(data.imageUrl)
+        onImageUpdate(cleanImageUrl)
       }
 
       // Dispatch event for other components to update

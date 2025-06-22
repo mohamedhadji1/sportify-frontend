@@ -80,8 +80,17 @@ export const Navbar = () => {
         const { response, data: userData } = await AuthService.getCurrentUser();
         if (response.ok) {
           if (userData.success) {
+            // CRITICAL FIX: Clean up malformed URLs from backend immediately
+            let cleanProfileImage = userData.profileImage;
+            if (cleanProfileImage && typeof cleanProfileImage === 'string') {
+              cleanProfileImage = cleanProfileImage.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
+              cleanProfileImage = cleanProfileImage.replace(/https\/\//g, '');
+              cleanProfileImage = cleanProfileImage.replace(/http\/\//g, '');
+              console.log('🧹 Navbar: Cleaned profileImage from backend:', { original: userData.profileImage, cleaned: cleanProfileImage });
+            }
+            
             setUserName(userData.fullName || "User");
-            setUserProfileImage(userData.profileImage || null);
+            setUserProfileImage(cleanProfileImage || null);
             setUserRole(userData.role || null);
             setIsAuthenticated(true);
             // Store/update user details in localStorage
@@ -89,7 +98,7 @@ export const Navbar = () => {
               fullName: userData.fullName,
               email: userData.email,
               role: userData.role,
-              profileImage: userData.profileImage
+              profileImage: cleanProfileImage
             }));
           } else {
             // Token might be invalid or expired, or user not found
