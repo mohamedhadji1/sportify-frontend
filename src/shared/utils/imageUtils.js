@@ -2,28 +2,19 @@
 export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   
-  console.log('🔍 getImageUrl called with:', JSON.stringify(imagePath));
-  console.log('🔍 Original imagePath type:', typeof imagePath);
-  console.log('🔍 Original imagePath string:', String(imagePath));
-  
   // EMERGENCY FIX: If the input already contains the exact error pattern, fix it immediately
   let inputPath = String(imagePath);
   if (inputPath.includes('http://https//')) {
-    console.log('🚨🚨 EMERGENCY: Input already contains http://https// pattern!');
     inputPath = inputPath.replace(/http:\/\/https\/\//g, 'https://');
-    console.log('🚑 Emergency fixed input:', inputPath);
   }
   
   // IMMEDIATE FIX for the exact error pattern we're seeing
   if (inputPath.includes('https//sportify-auth.onrender.com')) {
-    console.log('🎯🚨 CRITICAL: Found exact error pattern https//sportify-auth.onrender.com');
     inputPath = inputPath.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
-    console.log('🎯 Immediately fixed to:', inputPath);
   }
   
   imagePath = inputPath;
-  
-  // ULTRA-AGGRESSIVE FIX: Remove ALL malformed protocol patterns IMMEDIATELY
+    // ULTRA-AGGRESSIVE FIX: Remove ALL malformed protocol patterns IMMEDIATELY
   let cleanedPath = String(imagePath);
   
   // Store original for comparison
@@ -31,16 +22,12 @@ export const getImageUrl = (imagePath) => {
   
   // Remove https// patterns EVERYWHERE in the string (not just at start)
   while (cleanedPath.includes('https//')) {
-    console.log('🚨 CRITICAL: Found https// pattern, removing!');
     cleanedPath = cleanedPath.replace(/https\/\//g, '');
-    console.log('🔥 After https// removal:', cleanedPath);
   }
   
   // Remove http// patterns EVERYWHERE in the string  
   while (cleanedPath.includes('http//')) {
-    console.log('🚨 CRITICAL: Found http// pattern, removing!');
     cleanedPath = cleanedPath.replace(/http\/\//g, '');
-    console.log('🔥 After http// removal:', cleanedPath);
   }
   
   // Remove any other malformed protocol patterns - ULTRA AGGRESSIVE
@@ -50,11 +37,8 @@ export const getImageUrl = (imagePath) => {
     .replace(/http:\/\/https:\/\//g, '')
     .replace(/http:\/\/https\/\//g, '')
     .replace(/https:\/\/http:\/\//g, '')
-    .replace(/https:\/\/http\/\//g, '')
-    .replace(/http:\/\/http:\/\//g, '')
+    .replace(/https:\/\/http\/\//g, '')    .replace(/http:\/\/http:\/\//g, '')
     .replace(/http:\/\/http\/\//g, '');
-  
-  console.log('🧽 ULTRA CLEANUP - Original:', originalPath, 'Cleaned:', cleanedPath);
   
   imagePath = cleanedPath;
   
@@ -81,22 +65,16 @@ export const getImageUrl = (imagePath) => {
   
   // Special handling for the domain mismatch issue
   // If the domain is sportify-auth.onrender.com, change it to sportify-auth-backend.onrender.com
-  if (baseUrl.includes('sportify-auth.onrender.com') && !baseUrl.includes('sportify-auth-backend.onrender.com')) {
-    baseUrl = baseUrl.replace('sportify-auth.onrender.com', 'sportify-auth-backend.onrender.com');
+  if (baseUrl.includes('sportify-auth.onrender.com') && !baseUrl.includes('sportify-auth-backend.onrender.com')) {    baseUrl = baseUrl.replace('sportify-auth.onrender.com', 'sportify-auth-backend.onrender.com');
   }
   
-  console.log('🔧 Cleaned baseUrl:', baseUrl);  // Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
-  let cleanImagePath = imagePath;
-  
-  console.log('🧹 Before cleanup:', { originalImagePath: imagePath, cleanImagePath });  // AGGRESSIVE APPROACH: If it contains any URL patterns, extract just the path
+  // Clean up the imagePath parameter - AGGRESSIVELY remove all protocol patterns
+  let cleanImagePath = imagePath;  // AGGRESSIVE APPROACH: If it contains any URL patterns, extract just the path
   if (cleanImagePath.includes('://') || cleanImagePath.includes('//') || cleanImagePath.includes('.onrender.com') || cleanImagePath.includes('sportify-auth')) {
-    console.log('🚨 DETECTED malformed URL pattern in imagePath!');
     
     // SPECIFIC FIX for the exact error pattern: https//sportify-auth.onrender.com/uploads/...
     if (cleanImagePath.includes('https//sportify-auth.onrender.com')) {
-      console.log('🎯 FOUND EXACT ERROR PATTERN: https//sportify-auth.onrender.com');
       cleanImagePath = cleanImagePath.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
-      console.log('🎯 After removing exact pattern:', cleanImagePath);
     }
     
     // CRITICAL: Remove ALL malformed protocol patterns AGAIN before processing
@@ -109,23 +87,19 @@ export const getImageUrl = (imagePath) => {
       .replace(/http:\/\/https\/\//g, '');
     
     console.log('🔥 After aggressive protocol cleanup:', cleanImagePath);
-    
-    // First, try to extract /uploads/ path pattern
+      // First, try to extract /uploads/ path pattern
     const uploadsMatch = cleanImagePath.match(/(\/uploads\/[^?\s\n]*)/);
     if (uploadsMatch) {
       cleanImagePath = uploadsMatch[1];
-      console.log('✅ Extracted via uploads pattern:', cleanImagePath);
     } else {      // Try to extract any path after .com
       const pathMatch = cleanImagePath.match(/\.com([/].*?)(?:\?|$|$)/);
       if (pathMatch && pathMatch[1]) {
         cleanImagePath = pathMatch[1];
-        console.log('✅ Extracted via .com pattern:', cleanImagePath);
       } else {
         // Last resort: remove everything before the first /
         const slashIndex = cleanImagePath.lastIndexOf('/');
         if (slashIndex > 0) {
           cleanImagePath = cleanImagePath.substring(slashIndex);
-          console.log('✅ Extracted via last slash:', cleanImagePath);
         }
       }
     }
@@ -135,35 +109,23 @@ export const getImageUrl = (imagePath) => {
   cleanImagePath = cleanImagePath
     .replace(/^https?:\/\/.*?\//, '/')  // Remove full protocol+domain
     .replace(/^https?\/\/.*?\//, '/')   // Remove malformed protocol+domain
-    .replace(/https?\/\//g, '')        // Remove any remaining https// patterns
-    .replace(/^\/+/, '/');             // Normalize multiple leading slashes
+    .replace(/https?\/\//g, '')        // Remove any remaining https// patterns    .replace(/^\/+/, '/');             // Normalize multiple leading slashes
   
-  console.log('🔧 After aggressive cleanup:', cleanImagePath);  // Ensure the image path starts with /
+  // Ensure the image path starts with /
   if (!cleanImagePath.startsWith('/')) {
     cleanImagePath = `/${cleanImagePath}`;
   }
-  
-  console.log('🔧 Final cleanup result:', cleanImagePath);
-  
-  // Construct the final URL
+    // Construct the final URL
   const finalUrl = `${baseUrl}${cleanImagePath}`;
-  
-  console.log('🎯 FINAL RESULT:', { 
-    originalImagePath: imagePath,
-    cleanedBaseUrl: baseUrl, 
-    cleanImagePath, 
-    finalUrl: finalUrl
-  });
   
   // Final safety check - ensure the result is a proper HTTPS URL
   if (!finalUrl.startsWith('https://')) {
-    console.error('🚨 ERROR: Final URL does not start with https://', finalUrl);
     const safeUrl = `https://sportify-auth-backend.onrender.com${cleanImagePath}`;
-    console.log('🛡️ FALLBACK URL:', safeUrl);
     return safeUrl;
-  }  // Double-check that we don't have any malformed patterns in the final URL
+  }
+  
+  // Double-check that we don't have any malformed patterns in the final URL
   if (finalUrl.includes('https//') || finalUrl.includes('http//') || finalUrl.includes('://://') || finalUrl.includes('https://https//')) {
-    console.error('🚨 ERROR: Final URL still contains malformed patterns!', finalUrl);
     let fixedUrl = finalUrl
       .replace(/https\/\//g, 'https://')
       .replace(/http\/\//g, 'https://')
@@ -173,18 +135,14 @@ export const getImageUrl = (imagePath) => {
       .replace(/http:\/\/https\/\//g, 'https://')
       .replace(/https:\/\/https\/\//g, 'https://')
       .replace(/:\/\/:\/\//g, '://');
-    console.log('🔧 FIXED URL:', fixedUrl);
     return fixedUrl;
   }
   
   // FINAL EMERGENCY CHECK: Look for the exact error pattern we're getting
   if (finalUrl.includes('https://https//')) {
-    console.error('🚨🚨 EMERGENCY: Found exact error pattern https://https//');
     const emergencyFix = finalUrl.replace(/https:\/\/https\/\//g, 'https://');
-    console.log('🚑 EMERGENCY FIX:', emergencyFix);
     return emergencyFix;
   }
   
-  console.log('✅ FINAL URL LOOKS CLEAN:', finalUrl);
   return finalUrl;
 };

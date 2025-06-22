@@ -86,7 +86,6 @@ export const Navbar = () => {
               cleanProfileImage = cleanProfileImage.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
               cleanProfileImage = cleanProfileImage.replace(/https\/\//g, '');
               cleanProfileImage = cleanProfileImage.replace(/http\/\//g, '');
-              console.log('🧹 Navbar: Cleaned profileImage from backend:', { original: userData.profileImage, cleaned: cleanProfileImage });
             }
             
             setUserName(userData.fullName || "User");

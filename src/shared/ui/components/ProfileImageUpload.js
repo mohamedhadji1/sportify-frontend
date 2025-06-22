@@ -60,15 +60,13 @@ export const ProfileImageUpload = ({ currentImage, onImageUpdate, className = ""
       setSuccess("Profile image updated successfully!")
         // Update the user data in localStorage
       const userData = JSON.parse(localStorage.getItem("user") || "{}")
-      
-      // CRITICAL FIX: Clean up malformed URLs from backend immediately
+        // CRITICAL FIX: Clean up malformed URLs from backend immediately
       let cleanImageUrl = data.imageUrl;
       if (cleanImageUrl && typeof cleanImageUrl === 'string') {
         // Remove the malformed https// pattern that causes http://https// errors
         cleanImageUrl = cleanImageUrl.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
         cleanImageUrl = cleanImageUrl.replace(/https\/\//g, '');
         cleanImageUrl = cleanImageUrl.replace(/http\/\//g, '');
-        console.log('🧹 ProfileImageUpload: Cleaned imageUrl from backend:', { original: data.imageUrl, cleaned: cleanImageUrl });
       }
       
       userData.profileImage = cleanImageUrl

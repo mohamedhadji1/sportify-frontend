@@ -58,14 +58,12 @@ export const Navbar = () => {
     if (token) {
       try {        const { response, data: userData } = await AuthService.getCurrentUser();
         if (response.ok) {
-          if (userData.success) {
-            // CRITICAL FIX: Clean up malformed URLs from backend immediately
+          if (userData.success) {            // CRITICAL FIX: Clean up malformed URLs from backend immediately
             let cleanProfileImage = userData.profileImage;
             if (cleanProfileImage && typeof cleanProfileImage === 'string') {
               cleanProfileImage = cleanProfileImage.replace(/https\/\/sportify-auth\.onrender\.com/g, '');
               cleanProfileImage = cleanProfileImage.replace(/https\/\//g, '');
               cleanProfileImage = cleanProfileImage.replace(/http\/\//g, '');
-              console.log('🧹 Navbar: Cleaned profileImage from backend:', { original: userData.profileImage, cleaned: cleanProfileImage });
             }
             
             setUserName(userData.fullName || "User");
