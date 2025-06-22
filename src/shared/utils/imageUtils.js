@@ -115,9 +115,8 @@ export const getImageUrl = (imagePath) => {
     if (uploadsMatch) {
       cleanImagePath = uploadsMatch[1];
       console.log('✅ Extracted via uploads pattern:', cleanImagePath);
-    } else {
-      // Try to extract any path after .com
-      const pathMatch = cleanImagePath.match(/\.com([\/].*?)(?:\?|$|$)/);
+    } else {      // Try to extract any path after .com
+      const pathMatch = cleanImagePath.match(/\.com([/].*?)(?:\?|$|$)/);
       if (pathMatch && pathMatch[1]) {
         cleanImagePath = pathMatch[1];
         console.log('✅ Extracted via .com pattern:', cleanImagePath);

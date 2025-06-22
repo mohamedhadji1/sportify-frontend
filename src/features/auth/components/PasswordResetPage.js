@@ -20,7 +20,7 @@ const PasswordResetPage = () => {
         setLoading(false);
         return;
       }      try {
-        const { response, data } = await AuthService.validateResetToken(token);
+        const { data } = await AuthService.validateResetToken(token);
           if (data.success) {
           setTokenValid(true);
           setUserRole(data.data?.role);

@@ -8,8 +8,6 @@ import { Avatar } from "../../shared/ui/components/Avatar"
 import { AuthService } from "../../features/auth/services/authService"
 import { getImageUrl } from "../../shared/utils/imageUtils"
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://sportify-auth-backend.onrender.com/api';
-
 // Lazy load auth components to prevent reCAPTCHA from loading globally
 const ManagerSignIn = lazy(() => import("../../features/auth/components/ManagerSignIn").then(module => ({ default: module.ManagerSignIn })))
 const PlayerSignIn = lazy(() => import("../../features/auth/components/PlayerSignIn").then(module => ({ default: module.PlayerSignIn })))
